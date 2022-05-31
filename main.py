@@ -27,8 +27,16 @@ def main():
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
     viewer.add_object(o)
 
+    #paramètres communs
+    nHaut=[0,1,0]
+    nBas=[]
+    nDroite=[]
+    nGauche=[]
+
     m = Mesh()
-    p0, p1, p2, p3 = [-25, 0, -25], [25, 0, -25], [25, 0, 25], [-25, 0, 25]
+    #la taille de la platforme est changée
+    p0, p1, p2, p3 = [-5, 0, -10], [5, 0, -10], [5, 0, 0], [-5, 0, 0]
+    p4, p5, p6, p7 = [-5, -1, -10], [5, -1, -10], [5, -1, 5], [-5, -1, 5]
     n, c = [0, 1, 0], [1, 1, 1]
     t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
     m.vertices = np.array([[p0 + n + c + t0], [p1 + n + c + t1], [p2 + n + c + t2], [p3 + n + c + t3]], np.float32)
@@ -39,10 +47,13 @@ def main():
 
     vao = Text.initalize_geometry()
     texture = glutils.load_texture('fontB.jpg')
-    o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
-    viewer.add_object(o)
-    o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
-    viewer.add_object(o)
+    #o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
+    #viewer.add_object(o)
+    #o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
+    #viewer.add_object(o)
+
+    #création méchants stegosaures
+    texture = glutils.load_texture('stegosaurus.jpg')
 
     viewer.run()
 
