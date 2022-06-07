@@ -6,6 +6,21 @@ import numpy as np
 import OpenGL.GL as GL
 import pyrr
 
+#Fonction----------------------------------------------------------------------
+def crea_obj (objet, texture,program3d_id,viewer) :
+    m = Mesh.load_obj(objet)
+    m.normalize()
+    m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
+    tr = Transformation3D()
+    tr.translation.y = -np.amin(m.vertices, axis=0)[1]
+    tr.translation.z = -5
+    tr.rotation_center.z = 0.2
+    texture = glutils.load_texture(texture)
+    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
+    o.visible = False
+    viewer.add_object(o)     
+
+#Main -------------------------------------------------------------------------
 def main():
     viewer = ViewerGL()
 
@@ -14,7 +29,7 @@ def main():
     viewer.cam.transformation.rotation_center = viewer.cam.transformation.translation.copy()
 
     program3d_id = glutils.create_program_from_file('shader.vert', 'shader.frag')
-    programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+    # programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
 
     m = Mesh.load_obj('stegosaurus.obj')
     m.normalize()
@@ -26,7 +41,49 @@ def main():
     texture = glutils.load_texture('stegosaurus.jpg')
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
     viewer.add_object(o)
-
+    
+    m = Mesh.load_obj("cube_ge.obj")
+    m.normalize()
+    m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
+    tr = Transformation3D()
+    tr.translation.y = -np.amin(m.vertices, axis=0)[1]
+    tr.translation.z = -5
+    tr.rotation_center.z = 0.2
+    texture = glutils.load_texture( "carre.jpg")
+    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
+    o.visible = False
+    viewer.add_object(o)                 
+    
+    # for i,obj in enumerate(viewer.objs) :
+    #     # print("ici")
+    #     # if i%2 != 0 :
+    #         # crea_obj("cube_ge.obj", "carre.jpg", program3d_id,viewer)
+    #         m = Mesh.load_obj("cube_ge.obj")
+    #         m.normalize()
+    #         m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
+    #         tr = Transformation3D()
+    #         tr.translation.y = -np.amin(m.vertices, axis=0)[1]
+    #         tr.translation.z = -5
+    #         tr.rotation_center.z = 0.2
+    #         texture = glutils.load_texture( "carre.jpg")
+    #         o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
+    #         o.visible = False
+    #         viewer.add_object(o)     
+        
+        # if i%2 == 0 and i != 0 :
+        #     # crea_obj("stegosaurus.obj", "carre.jpg",program3d_id,viewer)
+        #     m = Mesh.load_obj("stegosaurus.obj")
+        #     m.normalize()
+        #     m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
+        #     tr = Transformation3D()
+        #     tr.translation.y = -np.amin(m.vertices, axis=0)[1]
+        #     tr.translation.z = -5
+        #     tr.rotation_center.z = 0.2
+        #     texture = glutils.load_texture( "carre.jpg")
+        #     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
+        #     o.visible = False
+        #     viewer.add_object(o)     
+      
     m = Mesh()
     p0, p1, p2, p3 = [-25, 0, -25], [25, 0, -25], [25, 0, 25], [-25, 0, 25]
     n, c = [0, 1, 0], [1, 1, 1]
@@ -37,12 +94,12 @@ def main():
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
     viewer.add_object(o)
 
-    vao = Text.initalize_geometry()
-    texture = glutils.load_texture('fontB.jpg')
-    o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
-    viewer.add_object(o)
-    o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
-    viewer.add_object(o)
+    # vao = Text.initalize_geometry()
+    # texture = glutils.load_texture('fontB.jpg')
+    # o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
+    # viewer.add_object(o)
+    # o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
+    # viewer.add_object(o)
 
     viewer.run()
 

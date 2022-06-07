@@ -5,6 +5,7 @@ import glfw
 import pyrr
 import numpy as np
 from cpe3d import Object3D
+import projectile
 
 class ViewerGL:
     def __init__(self):
@@ -28,8 +29,13 @@ class ViewerGL:
         # choix de la couleur de fond
         GL.glClearColor(0.5, 0.6, 0.9, 1.0)
         print(f"OpenGL: {GL.glGetString(GL.GL_VERSION).decode('ascii')}")
-
+        
+        #on crée une liste de 20 objets qui contiendra le joueur,puis impair = projetile
+        #pair = mechant
         self.objs = []
+        for i in range(20) :
+            self.objs.append(0)
+            
         self.touch = {}
 
     def run(self):
@@ -40,12 +46,20 @@ class ViewerGL:
 
             self.update_key()
 
-            for obj in self.objs:
-                GL.glUseProgram(obj.program)
-                if isinstance(obj, Object3D):
-                    self.update_camera(obj.program)
-                obj.draw()
-
+            for i,obj in enumerate(self.objs):
+                
+                if type(obj) != type(0) :
+                   
+                    GL.glUseProgram(obj.program)
+                    if isinstance(obj, Object3D):
+                        self.update_camera(obj.program)
+                    obj.draw()
+                    
+                    if i%2 != 0 :
+                        self.avance(i,"p")
+                    if i%2 == 0 and i != 0 :
+                        self.avance(i,"m")
+                        
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
             # gestion des évènements
@@ -115,8 +129,35 @@ class ViewerGL:
         if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
 
+            
+
         if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
             self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
             self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 1, 5])
+            
+        if glfw.KEY_Z in self.touch and self.touch[glfw.KEY_Z] > 0 :
+            #lorsqu'on appuie on fait apparaitre l'objet et on lui donne en
+            #position initiale celle du stegosaurerotation_euler
+            self.objs[1].visible = True
+            self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
+            self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
+        
+    def avance (self,pos_lst, type_obj) :
+        #si le stegosaure est visible on le fait avancer
+        if self.objs[pos_lst].visible :
+            
+            #on est un projectile, on s'éloigne du joueur
+            if type_obj == "p" :                    
+                self.objs[pos_lst].transformation.translation += \
+                    pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
+                    create_from_eulers(self.objs[pos_lst].transformation.\
+                    rotation_euler), pyrr.Vector3([0, 0, 0.02]))
+                        
+            #on est un mechant, on se rapproche du stegosaure
+            if type_obj == "m" :                   
+                self.objs[pos_lst].transformation.translation -= \
+                    pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
+                    create_from_eulers(self.objs[pos_lst].transformation.\
+                    rotation_euler), pyrr.Vector3([0, 0, 0.02]))
