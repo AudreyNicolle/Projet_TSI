@@ -116,10 +116,12 @@ class ViewerGL:
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
 
         if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
+            
             self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 1, 5])
+            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
 
         # Mouvement de la cam
         # if glfw.KEY_Z in self.touch and self.touch[glfw.KEY_Z] > 0:

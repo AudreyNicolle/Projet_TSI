@@ -29,19 +29,21 @@ def main():
 
     #paramètres communs
     nHaut=[0,1,0]
-    nBas=[]
-    nDroite=[]
-    nGauche=[]
+    nBas=[0,-1,0]
+    nDroite=[0,0,-1]
+    nGauche=[-1,0,0]
+    t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
+    texture = glutils.load_texture('grass.jpg')
 
     m = Mesh()
     #la taille de la platforme est changée
-    p0, p1, p2, p3 = [-5, 0, -10], [5, 0, -10], [5, 0, 0], [-5, 0, 0]
+    p0, p1, p2, p3 = [-15, 0, -3.5], [15, 0, -3.5], [15, 0, -5.5], [-15, 0, -5.5]
     p4, p5, p6, p7 = [-5, -1, -10], [5, -1, -10], [5, -1, 5], [-5, -1, 5]
-    n, c = [0, 1, 0], [1, 1, 1]
-    t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
-    m.vertices = np.array([[p0 + n + c + t0], [p1 + n + c + t1], [p2 + n + c + t2], [p3 + n + c + t3]], np.float32)
+    c = [1, 1, 1]
+    
+    m.vertices = np.array([[p0 + nHaut + c + t0], [p1 + nHaut + c + t1], [p2 + nHaut + c + t2], [p3 + nHaut + c + t3]], np.float32)
     m.faces = np.array([[0, 1, 2], [0, 2, 3]], np.uint32)
-    texture = glutils.load_texture('grass.jpg')
+    
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
     viewer.add_object(o)
 
