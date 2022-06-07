@@ -97,11 +97,23 @@ class ViewerGL:
     def update_key(self):
         if glfw.KEY_UP in self.touch and self.touch[glfw.KEY_UP] > 0:
             self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
+
+            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
         #    self.objs[0].transformation.translation += \
         #        pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.08]))
         
         if glfw.KEY_DOWN in self.touch and self.touch[glfw.KEY_DOWN] > 0:
             self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
+
+            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
         #    self.objs[0].transformation.translation -= \
         #        pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.08]))
         
@@ -111,7 +123,7 @@ class ViewerGL:
                 pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([-0.2, 0, 0]))
 
             self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
+            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
             self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
@@ -121,7 +133,7 @@ class ViewerGL:
                 pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0.2, 0, 0]))
 
             self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
+            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
             self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
@@ -135,13 +147,13 @@ class ViewerGL:
         if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
 
-        if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
+        # if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
             
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
+        self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+        self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+        self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+        self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+        self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
 
         # Mouvement de la cam
         # if glfw.KEY_Z in self.touch and self.touch[glfw.KEY_Z] > 0:
