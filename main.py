@@ -64,7 +64,7 @@ def main():
         o = Object3D(vaoNow, m.get_nb_triangles(), program3d_id, texture, tr)
         viewer.add_object(o)
 
-    #paramètres communs
+    #plateforme principale
     texture = glutils.load_texture('grass.jpg')
 
     #la taille de la platforme est changée
@@ -91,8 +91,8 @@ def main():
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
     viewer.add_object(o)
     
-    vao = Text.initalize_geometry()
-    texture = glutils.load_texture('fontB.jpg')
+    #vao = Text.initalize_geometry()
+    #texture = glutils.load_texture('fontB.jpg')
     #o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
     #viewer.add_object(o)
     #o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
