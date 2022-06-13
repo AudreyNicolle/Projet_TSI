@@ -28,6 +28,7 @@ class Object3D(Object):
     def __init__(self, vao, nb_triangle, program, texture, transformation):
         super().__init__(vao, nb_triangle, program, texture)
         self.transformation = transformation
+        self.sens = 1
 
     def draw(self):
         GL.glUseProgram(self.program)
