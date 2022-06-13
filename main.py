@@ -1,3 +1,4 @@
+
 from viewerGL import ViewerGL
 import glutils
 from mesh import Mesh
@@ -6,21 +7,6 @@ import numpy as np
 import OpenGL.GL as GL
 import pyrr
 
-#Fonction----------------------------------------------------------------------
-def crea_obj (objet, texture,program3d_id,viewer) :
-    m = Mesh.load_obj(objet)
-    m.normalize()
-    m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
-    tr = Transformation3D()
-    tr.translation.y = -np.amin(m.vertices, axis=0)[1]
-    tr.translation.z = -5
-    tr.rotation_center.z = 0.2
-    texture = glutils.load_texture(texture)
-    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
-    o.visible = False
-    viewer.add_object(o)     
-
-#Main -------------------------------------------------------------------------
 def main():
     viewer = ViewerGL()
 
@@ -29,7 +15,7 @@ def main():
     viewer.cam.transformation.rotation_center = viewer.cam.transformation.translation.copy()
 
     program3d_id = glutils.create_program_from_file('shader.vert', 'shader.frag')
-    # programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+    programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
 
     m = Mesh.load_obj('stegosaurus.obj')
     m.normalize()
@@ -42,48 +28,18 @@ def main():
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
     viewer.add_object(o)
     
-    m = Mesh.load_obj("cube_ge.obj")
+    m = Mesh.load_obj('cube_ge.obj')
     m.normalize()
-    m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
+    m.apply_matrix(pyrr.matrix44.create_from_scale([0.25, 0.25, 0.25, 1]))
     tr = Transformation3D()
     tr.translation.y = -np.amin(m.vertices, axis=0)[1]
     tr.translation.z = -5
     tr.rotation_center.z = 0.2
-    texture = glutils.load_texture( "carre.jpg")
+    texture = glutils.load_texture('carre.jpg')
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
     o.visible = False
-    viewer.add_object(o)                 
+    viewer.add_object(o)
     
-    # for i,obj in enumerate(viewer.objs) :
-    #     # print("ici")
-    #     # if i%2 != 0 :
-    #         # crea_obj("cube_ge.obj", "carre.jpg", program3d_id,viewer)
-    #         m = Mesh.load_obj("cube_ge.obj")
-    #         m.normalize()
-    #         m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
-    #         tr = Transformation3D()
-    #         tr.translation.y = -np.amin(m.vertices, axis=0)[1]
-    #         tr.translation.z = -5
-    #         tr.rotation_center.z = 0.2
-    #         texture = glutils.load_texture( "carre.jpg")
-    #         o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
-    #         o.visible = False
-    #         viewer.add_object(o)     
-        
-        # if i%2 == 0 and i != 0 :
-        #     # crea_obj("stegosaurus.obj", "carre.jpg",program3d_id,viewer)
-        #     m = Mesh.load_obj("stegosaurus.obj")
-        #     m.normalize()
-        #     m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
-        #     tr = Transformation3D()
-        #     tr.translation.y = -np.amin(m.vertices, axis=0)[1]
-        #     tr.translation.z = -5
-        #     tr.rotation_center.z = 0.2
-        #     texture = glutils.load_texture( "carre.jpg")
-        #     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
-        #     o.visible = False
-        #     viewer.add_object(o)     
-      
     m = Mesh()
     p0, p1, p2, p3 = [-25, 0, -25], [25, 0, -25], [25, 0, 25], [-25, 0, 25]
     n, c = [0, 1, 0], [1, 1, 1]
@@ -100,6 +56,20 @@ def main():
     # viewer.add_object(o)
     # o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
     # viewer.add_object(o)
+    
+        #stregosaure test mechant
+    m = Mesh.load_obj('stegosaurus.obj')
+    m.normalize()
+    m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
+    tr = Transformation3D()
+    tr.translation.x = 0
+    tr.translation.y = 1.5
+    tr.translation.z = 5
+    tr.rotation_euler[pyrr.euler.index().yaw] = np.pi/2
+    tr.rotation_center.z = 0.0
+    texture = glutils.load_texture('stegosaurus.jpg')
+    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
+    viewer.add_object(o)
 
     viewer.run()
 

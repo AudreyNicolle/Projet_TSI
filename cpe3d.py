@@ -1,3 +1,4 @@
+
 import OpenGL.GL as GL
 import pyrr
 import numpy as np 
@@ -77,7 +78,7 @@ class Text(Object):
         loc = GL.glGetUniformLocation(self.program, "size")
         if (loc == -1) :
             print("Pas de variable uniforme : size")
-        GL.glUniform2f(loc, size[0], size[1],0)
+        GL.glUniform2f(loc, size[0], size[1], 0)
         GL.glBindVertexArray(self.vao)
         GL.glBindTexture(GL.GL_TEXTURE_2D, self.texture)
         for idx, c in enumerate(self.value):
