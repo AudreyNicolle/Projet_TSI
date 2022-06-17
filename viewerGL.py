@@ -35,50 +35,27 @@ class ViewerGL:
         self.objs = []
         self.touch = {}
 
-    def creation_plat_rectangulaire(self,p0,p1,p2,p3,p4,p5,p6,p7,c):
-        nHaut=[0,1,0]
-        nBas=[0,-1,0]
-        nDroite=[0,0,-1]
-        nGauche=[0,0,1]
-        nDevant=[1,0,0]
-        nDerriere=[-1,0,0]
-        t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
-
-        verti = [[p0 + nHaut + c + t0], [p1 + nHaut + c + t1], [p2 + nHaut + c + t2], [p3 + nHaut + c + t3],
-        [p4 + nBas + c + t0], [p5 + nBas + c + t1], [p6 + nBas + c + t2], [p7 + nBas + c + t3],
-        [p0 + nGauche + c + t0], [p4 + nGauche + c + t1], [p7 + nGauche + c + t2], [p3 + nGauche + c + t3],
-        [p3 + nDevant + c + t0], [p2 + nDevant + c + t1], [p6 + nDevant + c + t2], [p7 + nDevant + c + t3],
-        [p0 + nDerriere + c + t0], [p1 + nDerriere + c + t1], [p5 + nDerriere + c + t2], [p4 + nDerriere + c + t3],
-        [p1 + nDroite + c + t0], [p5 + nDroite + c + t1], [p6 + nDroite + c + t2], [p2 + nDroite + c + t3]]
-        return verti
-
-    def creation_faces_rectangulaire(self):
-        faces = [[0, 1, 2], [0, 2, 3],
-        [4, 5, 6], [4, 6, 7],
-        [8, 9, 10], [8, 10, 11],
-        [12, 13, 14], [12, 14, 15],
-        [16, 17, 18], [16, 18, 19],
-        [20, 21, 22], [20, 22, 23]]
-        return faces
-
-    def run(self):
+    def run(self,vitesse):
         # boucle d'affichage*
-        m = Mesh()
+        m = Mesh() 
+        reboucle = True #pour pas reboucler quand on perd
         program3d_id = glutils.create_program_from_file('shader.vert', 'shader.frag')
         while not glfw.window_should_close(self.window):
             # nettoyage de la fenêtre : fond et profondeur
             GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-
-            if collision.boucle_collision(self.objs[0]):
-                programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
-                vao = Text.initalize_geometry()
-                texture = glutils.load_texture('fontB.jpg')
-                o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
-                self.add_object(o)
-                o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
-                self.add_object(o)
+            testXG,testXD = collision.boucle_collision(self.objs[0],vitesse)
+            '''if reboucle :
+                if collision.boucle_collision(self.objs[0]):
+                    programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+                    vao = Text.initalize_geometry()
+                    texture = glutils.load_texture('fontB.jpg')
+                    o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
+                    self.add_object(o)
+                    o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
+                    self.add_object(o)
+                    reboucle = False'''
             
-            self.update_key(self)
+            self.update_key(reboucle,testXG,testXD,vitesse)
 
             for obj in self.objs:
                 GL.glUseProgram(obj.program)
@@ -134,94 +111,105 @@ class ViewerGL:
             print("Pas de variable uniforme : projection")
         GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, self.cam.projection)
 
-    def update_key(self,win):
-        
-        if glfw.KEY_UP in self.touch and self.touch[glfw.KEY_UP] > 0:
-            #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
-            self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.005
+    def update_key(self,phase,testXG,testXD,vitesse):
+        if phase: #utilise pour voir si on est en phase de jeu ou de défaite
+            '''if glfw.KEY_UP in self.touch and self.touch[glfw.KEY_UP] > 0:
+                #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
+                self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.005
 
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
-        #    self.objs[0].transformation.translation += \
-        #        pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.08]))
-        
-        if glfw.KEY_DOWN in self.touch and self.touch[glfw.KEY_DOWN] > 0:
-            #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-            self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.005
-
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
-        #    self.objs[0].transformation.translation -= \
-        #        pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.08]))
-        
-        if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
-            #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-            self.objs[0].transformation.translation -= \
-                pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([-0.05, 0, 0]))
-                #pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([-0.2, 0, 0]))
-                
-
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
-        if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
-            #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
-            self.objs[0].transformation.translation -= \
-                pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0.05, 0, 0]))
-                #pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0.2, 0, 0]))
-                
-
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
-
-        if glfw.KEY_I in self.touch and self.touch[glfw.KEY_I] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] -= 0.1
-        if glfw.KEY_K in self.touch and self.touch[glfw.KEY_K] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
-        if glfw.KEY_J in self.touch and self.touch[glfw.KEY_J] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-        if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
-        
-        if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
-            programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
-            vao = Text.initalize_geometry()
-            texture = glutils.load_texture('fontB.jpg')
-            o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
-            self.add_object(o)
-            o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
-            self.add_object(o)
-
-        '''
-        if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
+                self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+                self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+                self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+                self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
+            #    self.objs[0].transformation.translation += \
+            #        pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.08]))
             
-            texture = glutils.load_texture('grassBlueSat.jpg')
-            p0, p1, p2, p3 = [-2, 7, 7], [2, 7, 7], [2, 7, 9], [-2, 7, 9]
-            p4, p5, p6, p7 = [-2, 6, 7], [2, 6, 7], [2, 6, 9], [-2, 6, 9]
-            c = [1, 1, 1]
+            if glfw.KEY_DOWN in self.touch and self.touch[glfw.KEY_DOWN] > 0:
+                #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
+                self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.005
 
-            m.vertices = np.array(self.creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
-            m.faces = np.array(self.creation_faces_rectangulaire(), np.uint32)
+                self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+                self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+                self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+                self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
+            #    self.objs[0].transformation.translation -= \
+            #        pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.08]))'''
+            
+            if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
+                #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
+                if not(testXG):
+                    
+                    if vitesse == 1:
+                        self.objs[0].transformation.translation -= \
+                            pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([-0.1, 0, 0]))
+                    if vitesse == 2:
+                        self.objs[0].transformation.translation -= \
+                            pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([-0.2, 0, 0]))
+                        
 
-            o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
-            self.add_object(o)
-        '''
-        self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-        self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
-        self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-        self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-        self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
+                    self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+                    self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+                    self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
+
+            if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
+                if not(testXD):
+                    #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
+                    if vitesse == 1 :
+                        self.objs[0].transformation.translation -= \
+                            pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0.1, 0, 0]))
+                    if vitesse == 2 :        
+                        self.objs[0].transformation.translation -= \
+                            pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0.2, 0, 0]))
+                        
+
+                    self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+                    self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+                    self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
+
+            if glfw.KEY_I in self.touch and self.touch[glfw.KEY_I] > 0:
+                self.cam.transformation.rotation_euler[pyrr.euler.index().roll] -= 0.1
+            if glfw.KEY_K in self.touch and self.touch[glfw.KEY_K] > 0:
+                self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
+            if glfw.KEY_J in self.touch and self.touch[glfw.KEY_J] > 0:
+                self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
+            if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
+                self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
+            
+            if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
+                programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+                vao = Text.initalize_geometry()
+                texture = glutils.load_texture('fontB.jpg')
+                o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
+                self.add_object(o)
+                o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
+                self.add_object(o)
+
+            '''
+            if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
+                
+                texture = glutils.load_texture('grassBlueSat.jpg')
+                p0, p1, p2, p3 = [-2, 7, 7], [2, 7, 7], [2, 7, 9], [-2, 7, 9]
+                p4, p5, p6, p7 = [-2, 6, 7], [2, 6, 7], [2, 6, 9], [-2, 6, 9]
+                c = [1, 1, 1]
+
+                m.vertices = np.array(self.creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
+                m.faces = np.array(self.creation_faces_rectangulaire(), np.uint32)
+
+                o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+                self.add_object(o)
+            '''
+            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
+
+            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
 
         # Mouvement de la cam
         # if glfw.KEY_Z in self.touch and self.touch[glfw.KEY_Z] > 0:

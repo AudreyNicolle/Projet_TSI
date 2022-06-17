@@ -1,12 +1,22 @@
 from cpe3d import Transformation3D
 
 class collision:
-    def boucle_collision(objc):
-        posZ = objc.transformation.translation.z
+    def boucle_collision(objc,vitesse):
+        
         posX = objc.transformation.translation.x
-        print(posZ)
-        if posZ > -3 or posZ < -6 or posX > 15 or posX < -15:
-            return True
+        testXG=False
+        testXD=False
+        print(posX)
+        if vitesse == 1:
+            if posX > 13 :
+                testXG = True
+            elif posX < -12.5 :
+                testXD = True
+            return testXG,testXD
         else :
-            return False
+            if posX > 12.9 :
+                testXG = True
+            elif posX < -12.4 :
+                testXD = True
+            return testXG,testXD
         
