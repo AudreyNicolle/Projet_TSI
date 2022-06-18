@@ -63,19 +63,21 @@ class ViewerGL:
         return faces
 
     def run(self):
+        
+        #initialisation affichage score 
+        programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+        vao = Text.initalize_geometry()
+        texture = glutils.load_texture('fontB.jpg')
+        o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
+        self.add_object(o)
+        
         # boucle d'affichage
         while not glfw.window_should_close(self.window):
             # nettoyage de la fenêtre : fond et profondeur
             GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
             self.update_key(self)
-            # print(len(self.objs))
-            # self.objs.remove(self.objs[7])
-            # programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
-            # vao = Text.initalize_geometry()
-            # texture = glutils.load_texture('fontB.jpg')
-            # o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
-            # self.add_object(o)
+            self.affichage_score()
 
             for obj in self.objs:
                 GL.glUseProgram(obj.program)
@@ -233,6 +235,8 @@ class ViewerGL:
                 < round(self.objs[1].transformation.translation.x,1) + 0.5 :
                 self.score += 1
                 self.objs[1].visible = False
+                self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
+                self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
                 self.objs[i].visible = False
                 self.objs[i].transformation.translation.x = -3 + random.random()*15
                 self.objs[i].visible = True
@@ -247,6 +251,7 @@ class ViewerGL:
 
         posZ = self.objs[0].transformation.translation.z
         posX =self.objs[0].transformation.translation.x
+        
         if posZ > -3 or posZ < -6 or posX > 15 or posX < -15:
             programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
             vao = Text.initalize_geometry()
@@ -256,7 +261,14 @@ class ViewerGL:
             o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
             self.add_object(o)
 
-        #def affichage_score(self):
+    def affichage_score(self):
+        del self.objs[7]
+        programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+        vao = Text.initalize_geometry()
+        texture = glutils.load_texture('fontB.jpg')
+        o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
+        self.add_object(o)
+
 
         
                 
