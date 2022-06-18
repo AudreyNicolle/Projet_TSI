@@ -68,16 +68,7 @@ def main():
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
     o.visible = False
     viewer.add_object(o)
-    
-    # m = Mesh()
-    # p0, p1, p2, p3 = [-25, 0, -25], [25, 0, -25], [25, 0, 25], [-25, 0, 25]
-    # n, c = [0, 1, 0], [1, 1, 1]
-    # t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
-    # m.vertices = np.array([[p0 + n + c + t0], [p1 + n + c + t1], [p2 + n + c + t2], [p3 + n + c + t3]], np.float32)
-    # m.faces = np.array([[0, 1, 2], [0, 2, 3]], np.uint32)
-    # texture = glutils.load_texture('grass.jpg')
-    # o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
-    # viewer.add_object(o)
+
 
     #plateforme principale
     texture = glutils.load_texture('grass.jpg')
@@ -113,20 +104,6 @@ def main():
     # o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
     # viewer.add_object(o)
     
-        #stregosaure test mechant
-    # m = Mesh.load_obj('stegosaurus.obj')
-    # m.normalize()
-    # m.apply_matrix(pyrr.matrix44.create_from_scale([2, 2, 2, 1]))
-    # tr = Transformation3D()
-    # tr.translation.x = 0
-    # tr.translation.y = 1.5
-    # tr.translation.z = 5
-    # tr.rotation_euler[pyrr.euler.index().yaw] = np.pi/2
-    # tr.rotation_center.z = 0.0
-    # texture = glutils.load_texture('stegosaurus.jpg')
-    # o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
-    # viewer.add_object(o)
-    
     #stegosaure mechant
     for i in range(3):
             m = Mesh.load_obj('stegosaurus.obj')
@@ -144,6 +121,56 @@ def main():
     #création méchants stegosaures
     texture = glutils.load_texture('stegosaurus.jpg')
     
+    #la taille de la platforme est changée
+    m = Mesh()
+    p0, p1, p2, p3 = [-13, 0, -3], [13.5, 0, -3], [13.5, 0, -6], [-13, 0, -6]
+    p4, p5, p6, p7 = [-13, -1, -3], [13.5, -1, -3], [13.5, -1, -6], [-13, -1, -6]
+    c = [1, 1, 1]
+    p8, p9, p10, p11 = [-13, 0, -3], [13.5, 0, -3], [13.5, 0, -6], [-13, 0, -6]
+    p12, p13, p14, p15 = [-13, -1, -3], [13.5, -1, -3], [13.5, -1, -6], [-13, -1, -6]
+    
+    m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
+    m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
+    
+    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+    viewer.add_object(o)
+
+    #plateforme ennemie
+    texture = glutils.load_texture('grassBlueSat.jpg')
+    p0, p1, p2, p3 = [-12, 0, 7], [12, 0, 7], [12, 0, 23], [-12, 0, 23]
+    p4, p5, p6, p7 = [-12, -1, 7], [12, -1, 7], [12, -1, 23], [-12, -1, 23]
+    c = [1, 1, 1]
+
+    m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
+    m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
+
+    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+    viewer.add_object(o)
+
+    #barriere
+    p0, p1, p2, p3 = [-13, 0.3, -3], [-12.5, 0.3, -3], [-12.5, 0.3, -3.5], [-13, 0.3, -3.5]
+    p4, p5, p6, p7 = [-13, 0, -3], [-12.5, 0, -3], [-12.5, 0, -3.5], [-13, 0, -3.5]
+    c = [1, 1, 1]
+    p8, p9, p10, p11 = [-12.5, 0.2, -3.2], [-12, 0.2, -3.2], [-12, 0.2, -3.3], [-12.5, 0.2, -3.3]
+    p12, p13, p14, p15 = [-12.5, 0.1, -3.2], [-12, 0.1, -3.2], [-12, 0.1, -3.3], [-12.5, 0.1, -3.3]
+    vect = 0
+    for i in range(27):
+        texture = glutils.load_texture('wood.jpg')
+        p0[0], p1[0], p2[0], p3[0], p4[0], p5[0], p6[0], p7[0] = p0[0]+vect, p1[0]+vect, p2[0]+vect, p3[0]+vect, p4[0]+vect, p5[0]+vect, p6[0]+vect, p7[0]+vect 
+        m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
+        m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
+        o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+        viewer.add_object(o)
+        print(i)
+        if i !=26:
+            print(i,'2')
+            p8[0], p9[0], p10[0], p11[0], p12[0], p13[0], p14[0], p15[0] = p8[0]+vect, p9[0]+vect, p10[0]+vect, p11[0]+vect, p12[0]+vect, p13[0]+vect, p14[0]+vect, p15[0]+vect 
+            m.vertices = np.array(creation_plat_rectangulaire(p8,p9,p10,p11,p12,p13,p14,p15,c), np.float32)
+            m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
+            o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+            viewer.add_object(o)
+        vect = 1
+        
     viewer.run()
 
 if __name__ == '__main__':
