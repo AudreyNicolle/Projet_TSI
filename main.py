@@ -115,11 +115,11 @@ def main():
             tr.translation.x = -3 + 3*i
             tr.rotation_center.z = 0.1
             tr.rotation_euler[pyrr.euler.index().yaw] = np.pi
-
+            texture = glutils.load_texture('stegosaurus.jpg')
             o = Object3D(vaoNow, m.get_nb_triangles(), program3d_id, texture, tr)
             viewer.add_object(o)
     #création méchants stegosaures
-    texture = glutils.load_texture('stegosaurus.jpg')
+    
     
     #la taille de la platforme est changée
     m = Mesh()
@@ -161,9 +161,7 @@ def main():
         m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
         o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
         viewer.add_object(o)
-        print(i)
         if i !=26:
-            print(i,'2')
             p8[0], p9[0], p10[0], p11[0], p12[0], p13[0], p14[0], p15[0] = p8[0]+vect, p9[0]+vect, p10[0]+vect, p11[0]+vect, p12[0]+vect, p13[0]+vect, p14[0]+vect, p15[0]+vect 
             m.vertices = np.array(creation_plat_rectangulaire(p8,p9,p10,p11,p12,p13,p14,p15,c), np.float32)
             m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
