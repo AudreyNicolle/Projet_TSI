@@ -68,6 +68,7 @@ class ViewerGL:
     def run(self):
         
         reboucle = True #pour pas reboucler quand on perd
+        
         #initialisation affichage score 
         programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
         vao = Text.initalize_geometry()
@@ -88,10 +89,13 @@ class ViewerGL:
                     self.update_camera(obj.program)
                 obj.draw()
             
+            #appel des fonctions de gestion  des mouvements des objets et
+            # des interractions entre les objets, affichage objet 2D
             testXG,testXD = self.collision()
             self.mvt()
             self.update_key(reboucle,testXG,testXD)
             self.affichage_score()
+            
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
             # gestion des évènements
@@ -162,7 +166,6 @@ class ViewerGL:
 
             if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
                 if not(testXD):
-                        #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
                     if self.vitesse == 1 :
                         self.objs[0].transformation.translation -= \
                                 pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0.1, 0, 0]))
@@ -195,11 +198,11 @@ class ViewerGL:
                 o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
                 self.add_object(o)
             
+            #emission du projectile a l'appuie de la touche
             if glfw.KEY_Z in self.touch and self.touch[glfw.KEY_Z] > 0 :
                 #lorsqu'on appuie on fait apparaitre l'objet et on lui donne en
-                #position initiale celle du stegosaurerotation_euler
+                #position initiale celle du stegosaure
                 if self.objs[1].visible == False :
-                    #print(self.objs[1].visible)
                     self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
                     self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
                     self.objs[1].visible = True
@@ -211,26 +214,55 @@ class ViewerGL:
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
             self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15]) 
       
-        
+    """
+    @brief : cette méthode permet de gérer le mouvement du projectile et des ennemis.
+            
+    @param : none
+    
+    @return : none
+    """             
     def mvt(self) :
+        
+        #mouvement du projectile
         if self.objs[1].visible == True :
             self.objs[1].transformation.translation += \
                     pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
                     create_from_eulers(self.objs[1].transformation.\
                     rotation_euler), pyrr.Vector3([0, 0, 0.2]))
+        
+        #mouvement des ennemis
         for i in range(4,7) :
             if self.objs[i].visible == True :
                 self.objs[i].transformation.translation += self.objs[i].sens*\
                     pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
                     create_from_eulers(self.objs[1].transformation.\
-                    rotation_euler), pyrr.Vector3([0.1, 0, 0.0]))
-        
+                    rotation_euler), pyrr.Vector3([0.03, 0, 0.0]))
+   
+    """
+    @brief : cette méthode permet de gérer les collisions :
+            - entre le joueur et les bords de sa plateforme
+            - entre le projectile et les ennemis
+            - entre les ennemis et les bords de leur plateforme.
+            - entre le projectile et la fin de la platerforme
+            
+    @param : none
+    
+    @return :
+                testXG : permet de savoir si le joueur a atteint le bord gauche (booléen) 
+                testXD : permet de savoir si le joueur a atteint le bord droit (booléen) 
+    """     
     def collision(self) : 
-        #print(self.objs[1].transformation.translation.z,1, self.objs[3].transformation.translation.z)
+        
+        #on teste les collions entre le projectile et les ennemis qui dans la liste slef.objs
+        #sont aux indices 4,5,6. On verifie si les ennemis touche les bords de la plateforme.
         for i in range(4,7) :
+            #on vérifie si l'ennemi et le projectile sont sur la même profondeur (axe z) et sur 
+            # la même ligne (axe x)
             if round(self.objs[1].transformation.translation.z,1) == self.objs[i].transformation.translation.z and \
                 round(self.objs[1].transformation.translation.x,1) - 0.5 < self.objs[i].transformation.translation.x \
                 < round(self.objs[1].transformation.translation.x,1) + 0.5 :
+                #si oui, augmente le score, rend le projectile non visible, le réinitailise à la positon du joueur
+                #on rend l'enenemi non visible, on change sa position surla ligne, on le rend visible
                 self.score += 1
                 self.objs[1].visible = False
                 self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
@@ -239,14 +271,20 @@ class ViewerGL:
                 self.objs[i].transformation.translation.x = -3 + random.random()*15
                 self.objs[i].visible = True
 
+            #si l'ennemi touche les bords, on change le sens de sa direction
             if self.objs[i].transformation.translation.x  < -11.0 :
                 self.objs[i].sens = +1
+            
             if self.objs[i].transformation.translation.x > 11.0 :
                 self.objs[i].sens = -1
 
+        #si le projectile touche le fond de la plateforme ennemi, on la réinitialise
         if round(self.objs[1].transformation.translation.z,1) == 23.0 :
+            self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
+            self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
             self.objs[1].visible = False
 
+        #on verifie si le joueur touche les bords de sa plateforme
         posX =self.objs[0].transformation.translation.x
         posX = self.objs[0].transformation.translation.x
         testXG=False
@@ -264,8 +302,18 @@ class ViewerGL:
                 testXD = True
             return testXG,testXD
 
+    """
+    @brief : cette méthode permet d'afficher le score. On change de programme pour sélectionner
+            celui qui permet "d'écrire" en 2D. L'objet créé, le dernier de la liste self.objs, 
+            pour cette affichage est supprimé et rajouté à chaque tour.
+            
+    @param : none
+    
+    @return : none
+    """     
     def affichage_score(self):
-        del self.objs[7]
+        
+        del self.objs[62]
         programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
         vao = Text.initalize_geometry()
         texture = glutils.load_texture('fontB.jpg')
