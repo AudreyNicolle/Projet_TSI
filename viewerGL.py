@@ -1,6 +1,7 @@
 
 #!/usr/bin/env python3
 
+#Import------------------------------------------------------------------------------------------
 import OpenGL.GL as GL
 import glfw
 import pyrr
@@ -8,10 +9,10 @@ import numpy as np
 from cpe3d import Object3D,Text
 import glutils
 import random
-from mesh import Mesh
 
-
+#Classe------------------------------------------------------------------------------------------
 class ViewerGL:
+    
     def __init__(self):
         # initialisation de la librairie GLFW
         glfw.init()
@@ -144,6 +145,7 @@ class ViewerGL:
             print("Pas de variable uniforme : projection")
         GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, self.cam.projection)
 
+    
     def update_key(self,phase,testXG,testXD,):
         if phase :
             if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
@@ -214,6 +216,7 @@ class ViewerGL:
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
             self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15]) 
       
+      
     """
     @brief : cette méthode permet de gérer le mouvement du projectile et des ennemis.
             
@@ -237,6 +240,7 @@ class ViewerGL:
                     pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
                     create_from_eulers(self.objs[1].transformation.\
                     rotation_euler), pyrr.Vector3([0.03, 0, 0.0]))
+   
    
     """
     @brief : cette méthode permet de gérer les collisions :
@@ -302,6 +306,7 @@ class ViewerGL:
                 testXD = True
             return testXG,testXD
 
+
     """
     @brief : cette méthode permet d'afficher le score. On change de programme pour sélectionner
             celui qui permet "d'écrire" en 2D. L'objet créé, le dernier de la liste self.objs, 
@@ -313,7 +318,7 @@ class ViewerGL:
     """     
     def affichage_score(self):
         
-        del self.objs[62]
+        del self.objs[-1]
         programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
         vao = Text.initalize_geometry()
         texture = glutils.load_texture('fontB.jpg')
