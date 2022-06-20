@@ -69,27 +69,6 @@ def main():
     o.visible = False
     viewer.add_object(o)
 
-
-    #plateforme principale
-    texture = glutils.load_texture('grass.jpg')
-
-    
-    
-    
-    
-
-    #plateforme ennemie
-    texture = glutils.load_texture('grassBlueSat.jpg')
-    p0, p1, p2, p3 = [-12, 0, 7], [12, 0, 7], [12, 0, 23], [-12, 0, 23]
-    p4, p5, p6, p7 = [-12, -1, 7], [12, -1, 7], [12, -1, 23], [-12, -1, 23]
-    c = [1, 1, 1]
-
-    m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
-    m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
-
-    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
-    viewer.add_object(o)
-
     # vao = Text.initalize_geometry()
     # texture = glutils.load_texture('fontB.jpg')
     # o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)

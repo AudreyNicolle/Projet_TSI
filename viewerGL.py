@@ -244,7 +244,7 @@ class ViewerGL:
                     rotation_euler), pyrr.Vector3([0, 0, 0.2]))
         
         #mouvement des ennemis
-        for i in range(3,6) :
+        for i in range(2,5) :
             if self.objs[i].visible == True :
                 self.objs[i].transformation.translation += self.objs[i].sens*\
                     pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
@@ -269,7 +269,7 @@ class ViewerGL:
         
         #on teste les collions entre le projectile et les ennemis qui dans la liste slef.objs
         #sont aux indices 4,5,6. On verifie si les ennemis touche les bords de la plateforme.
-        for i in range(3,6) :
+        for i in range(2,5) :
             #on vérifie si l'ennemi et le projectile sont sur la même profondeur (axe z) et sur 
             # la même ligne (axe x)
             if round(self.objs[1].transformation.translation.z,1) == self.objs[i].transformation.translation.z and \
@@ -277,9 +277,9 @@ class ViewerGL:
                 < round(self.objs[1].transformation.translation.x,1) + 0.5 :
                 #si oui, augmente le score, rend le projectile non visible, le réinitailise à la positon du joueur
                 #on rend l'enenemi non visible, on change sa position sur la ligne, on le rend visible
-                if i == 3:
+                if i == 2:
                     self.score += 1
-                if i == 4 :
+                if i == 3:
                     self.score += 2
                 else : 
                     self.score += 3
