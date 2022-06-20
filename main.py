@@ -121,6 +121,16 @@ def main():
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
     viewer.add_object(o)
 
+    p0, p1, p2, p3 = [-12, 6, 7], [12, 6, 7], [12, 6, 23], [-12, 6, 23]
+    p4, p5, p6, p7 = [-12, 5, 7], [12, 5, 7], [12, 5, 23], [-12, 5, 23]
+    c = [1, 1, 1]
+
+    #m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
+    m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
+
+    o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+    viewer.add_object(o)
+
     #barriere
     p0, p1, p2, p3 = [-13, 0.3, -3], [-12.5, 0.3, -3], [-12.5, 0.3, -3.5], [-13, 0.3, -3.5]
     p4, p5, p6, p7 = [-13, 0, -3], [-12.5, 0, -3], [-12.5, 0, -3.5], [-13, 0, -3.5]

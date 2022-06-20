@@ -43,7 +43,7 @@ class ViewerGL:
         self.max_time = 30
         self.start_time = time.time()
         self.reboucle = True #pour pas reboucler quand on perd
-        self.score_win = 6
+        self.score_win = 8
 
     def creation_plat_rectangulaire(self,p0,p1,p2,p3,p4,p5,p6,p7,c):
         nHaut=[0,1,0]
@@ -80,6 +80,12 @@ class ViewerGL:
         o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
         self.add_object(o)
 
+        #initialisation de la caméra
+        self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+        self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
+        self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+        self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+        self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15]) 
          
         
         # boucle d'affichage
@@ -188,7 +194,7 @@ class ViewerGL:
                             
 
                     self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
                     self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
                     self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
                     self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
@@ -204,7 +210,7 @@ class ViewerGL:
                             
 
                     self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
                     self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
                     self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
                     self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
@@ -219,12 +225,7 @@ class ViewerGL:
                     self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
                     self.objs[1].visible = True
             
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
-
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15]) 
+            
       
       
     """
