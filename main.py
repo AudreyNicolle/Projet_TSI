@@ -78,6 +78,8 @@ def main():
     p0, p1, p2, p3 = [-15, 0, -3], [15, 0, -3], [15, 0, -6], [-15, 0, -6]
     p4, p5, p6, p7 = [-15, -1, -3], [15, -1, -3], [15, -1, -6], [-15, -1, -6]
     c = [1, 1, 1]
+
+    
     
     m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
     m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
@@ -122,6 +124,8 @@ def main():
     
     
     #la taille de la platforme est changée
+    #plateforme principale
+    texture = glutils.load_texture('grass.jpg')
     m = Mesh()
     p0, p1, p2, p3 = [-13, 0, -3], [13.5, 0, -3], [13.5, 0, -6], [-13, 0, -6]
     p4, p5, p6, p7 = [-13, -1, -3], [13.5, -1, -3], [13.5, -1, -6], [-13, -1, -6]
