@@ -244,7 +244,7 @@ class ViewerGL:
                     rotation_euler), pyrr.Vector3([0, 0, 0.2]))
         
         #mouvement des ennemis
-        for i in range(4,7) :
+        for i in range(3,6) :
             if self.objs[i].visible == True :
                 self.objs[i].transformation.translation += self.objs[i].sens*\
                     pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
