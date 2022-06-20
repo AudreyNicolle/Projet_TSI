@@ -277,7 +277,12 @@ class ViewerGL:
                 < round(self.objs[1].transformation.translation.x,1) + 0.5 :
                 #si oui, augmente le score, rend le projectile non visible, le réinitailise à la positon du joueur
                 #on rend l'enenemi non visible, on change sa position sur la ligne, on le rend visible
-                self.score += 1
+                if i == 4:
+                    self.score += 1
+                if i == 5 :
+                    self.score += 2
+                else : 
+                    self.score += 3
                 self.objs[1].visible = False
                 self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
                 self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
