@@ -9,6 +9,7 @@ import numpy as np
 from cpe3d import Object3D,Text
 import glutils
 import random
+import time
 
 #Classe------------------------------------------------------------------------------------------
 class ViewerGL:
@@ -39,6 +40,10 @@ class ViewerGL:
         self.touch = {}
         self.score = 0
         self.vitesse = 2
+        self.max_time = 30
+        self.start_time = time.time()
+        self.reboucle = True #pour pas reboucler quand on perd
+        self.score_win = 6
 
     def creation_plat_rectangulaire(self,p0,p1,p2,p3,p4,p5,p6,p7,c):
         nHaut=[0,1,0]
@@ -68,21 +73,43 @@ class ViewerGL:
 
     def run(self):
         
-        reboucle = True #pour pas reboucler quand on perd
-        
         #initialisation affichage score 
         programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
         vao = Text.initalize_geometry()
         texture = glutils.load_texture('fontB.jpg')
         o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
         self.add_object(o)
+
+         
         
         # boucle d'affichage
         while not glfw.window_should_close(self.window):
             # nettoyage de la fenêtre : fond et profondeur
             GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
-            
+            if self.score < self.score_win: # si le score est inferieur au score pour gagner il test si le temps imparti n'est pas depasse
+                if time.time() - self.start_time > self.max_time and self.reboucle: #si le temps imparti est dépassé il efface le score et met en gros "vous avez perdu"
+                    del self.objs[-1]
+                    GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+                    programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+                    vao = Text.initalize_geometry()
+                    texture = glutils.load_texture('fontB.jpg')
+                    o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
+                    self.add_object(o)
+                    o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
+                    self.add_object(o)
+                    self.reboucle = False #reboucle devient false pour eviter des actions en trop comme le reaffichage du message et l'update des keys du joueur
+            else : #si le score est egal il met "vous avez gagne"
+                del self.objs[-1]
+                GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+                programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
+                vao = Text.initalize_geometry()
+                texture = glutils.load_texture('fontB.jpg')
+                o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
+                self.add_object(o)
+                o = Text('GAGNE', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
+                self.add_object(o)
+                self.reboucle = False #reboucle devient false pour les memes raisons que precedemment
 
             for obj in self.objs:
                 GL.glUseProgram(obj.program)
@@ -94,8 +121,9 @@ class ViewerGL:
             # des interractions entre les objets, affichage objet 2D
             testXG,testXD = self.collision()
             self.mvt()
-            self.update_key(reboucle,testXG,testXD)
-            self.affichage_score()
+            self.update_key(testXG,testXD)
+            if self.reboucle:
+                self.affichage_score()
             
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
@@ -146,11 +174,10 @@ class ViewerGL:
         GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, self.cam.projection)
 
     
-    def update_key(self,phase,testXG,testXD,):
-        if phase :
-            if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
-                    #self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-                if not(testXG):
+    def update_key(self,testXG,testXD,):
+        if self.reboucle :
+            if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0: # test si la touche gauche est enfonce/on appuie dessus
+                if not(testXG): # test si le personnage n'est pas deja au bout de la plateforme
                         
                     if self.vitesse == 1:
                         self.objs[0].transformation.translation -= \
@@ -182,14 +209,6 @@ class ViewerGL:
                     self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
                     self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
 
-                
-                programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
-                vao = Text.initalize_geometry()
-                texture = glutils.load_texture('fontB.jpg')
-                o = Text('VOUS AVEZ', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
-                self.add_object(o)
-                o = Text('PERDU', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
-                self.add_object(o)
             
             #emission du projectile a l'appuie de la touche
             if glfw.KEY_Z in self.touch and self.touch[glfw.KEY_Z] > 0 :
@@ -257,7 +276,7 @@ class ViewerGL:
                 round(self.objs[1].transformation.translation.x,1) - 0.5 < self.objs[i].transformation.translation.x \
                 < round(self.objs[1].transformation.translation.x,1) + 0.5 :
                 #si oui, augmente le score, rend le projectile non visible, le réinitailise à la positon du joueur
-                #on rend l'enenemi non visible, on change sa position surla ligne, on le rend visible
+                #on rend l'enenemi non visible, on change sa position sur la ligne, on le rend visible
                 self.score += 1
                 self.objs[1].visible = False
                 self.objs[1].transformation.translation  = self.objs[0].transformation.translation.copy()                       
