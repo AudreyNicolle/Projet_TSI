@@ -38,7 +38,7 @@ class ViewerGL:
         self.objs = []
         self.touch = {}
         self.score = 0
-        self.vitesse = 1
+        self.vitesse = 2
 
     def creation_plat_rectangulaire(self,p0,p1,p2,p3,p4,p5,p6,p7,c):
         nHaut=[0,1,0]
@@ -182,16 +182,7 @@ class ViewerGL:
                     self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
                     self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
 
-            if glfw.KEY_I in self.touch and self.touch[glfw.KEY_I] > 0:
-                self.cam.transformation.rotation_euler[pyrr.euler.index().roll] -= 0.1
-            if glfw.KEY_K in self.touch and self.touch[glfw.KEY_K] > 0:
-                self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
-            if glfw.KEY_J in self.touch and self.touch[glfw.KEY_J] > 0:
-                self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-            if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
-                self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
                 
-            if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
                 programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
                 vao = Text.initalize_geometry()
                 texture = glutils.load_texture('fontB.jpg')
