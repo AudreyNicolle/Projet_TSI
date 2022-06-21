@@ -79,8 +79,6 @@ class ViewerGL:
         texture = glutils.load_texture('fontB.jpg')
         o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
         self.add_object(o)
-
-         
         
         # boucle d'affichage
         while not glfw.window_should_close(self.window):
