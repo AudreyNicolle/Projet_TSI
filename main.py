@@ -36,15 +36,14 @@ def creation_faces_rectangulaire():
 
 #Main-------------------------------------------------------------------------------------------------------------
 def main():
+    
     viewer = ViewerGL()
-
     viewer.set_camera(Camera())
     viewer.cam.transformation.translation.y = 2
     viewer.cam.transformation.rotation_center = viewer.cam.transformation.translation.copy()
-
     program3d_id = glutils.create_program_from_file('shader.vert', 'shader.frag')
-    programGUI_id = glutils.create_program_from_file('gui.vert', 'gui.frag')
 
+    #creation perosnnage joueur
     m = Mesh.load_obj('stegosaurus.obj')
     m.normalize()
     m.apply_matrix(pyrr.matrix44.create_from_scale([1.5, 1.5, 1.5, 1]))
@@ -57,6 +56,7 @@ def main():
     o = Object3D(vaoNow, m.get_nb_triangles(), program3d_id, texture, tr)
     viewer.add_object(o)
     
+    #creation projectile
     m = Mesh.load_obj('cube_ge.obj')
     m.normalize()
     m.apply_matrix(pyrr.matrix44.create_from_scale([0.25, 0.25, 0.25, 1]))
@@ -78,8 +78,6 @@ def main():
     p0, p1, p2, p3 = [-15, 0, -3], [15, 0, -3], [15, 0, -6], [-15, 0, -6]
     p4, p5, p6, p7 = [-15, -1, -3], [15, -1, -3], [15, -1, -6], [-15, -1, -6]
     c = [1, 1, 1]
-
-    
     
     m.vertices = np.array(creation_plat_rectangulaire(p0,p1,p2,p3,p4,p5,p6,p7,c), np.float32)
     m.faces = np.array(creation_faces_rectangulaire(), np.uint32)
@@ -98,13 +96,6 @@ def main():
 
     o = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
     viewer.add_object(o)
-
-    # vao = Text.initalize_geometry()
-    # texture = glutils.load_texture('fontB.jpg')
-    # o = Text('Bonjour les', np.array([-0.8, 0.3], np.float32), np.array([0.8, 0.8], np.float32), vao, 2, programGUI_id, texture)
-    # viewer.add_object(o)
-    # o = Text('3ETI', np.array([-0.5, -0.2], np.float32), np.array([0.5, 0.3], np.float32), vao, 2, programGUI_id, texture)
-    # viewer.add_object(o)
     
     #stegosaure mechant
     for i in range(3):
@@ -120,12 +111,8 @@ def main():
             texture = glutils.load_texture('stegosaurus.jpg')
             o = Object3D(vaoNow, m.get_nb_triangles(), program3d_id, texture, tr)
             viewer.add_object(o)
-    #création méchants stegosaures
-    
     
     #la taille de la platforme est changée
-    #plateforme principale
-    texture = glutils.load_texture('grass.jpg')
     m = Mesh()
     p0, p1, p2, p3 = [-13, 0, -3], [13.5, 0, -3], [13.5, 0, -6], [-13, 0, -6]
     p4, p5, p6, p7 = [-13, -1, -3], [13.5, -1, -3], [13.5, -1, -6], [-13, -1, -6]
