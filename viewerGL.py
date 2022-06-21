@@ -43,7 +43,7 @@ class ViewerGL:
         self.max_time = 30
         self.start_time = time.time()
         self.reboucle = True #pour pas reboucler quand on perd
-        self.score_win = 6
+        self.score_win = 8
 
     def creation_plat_rectangulaire(self,p0,p1,p2,p3,p4,p5,p6,p7,c):
         nHaut=[0,1,0]
@@ -79,6 +79,14 @@ class ViewerGL:
         texture = glutils.load_texture('fontB.jpg')
         o = Text('Score : ' + str(self.score), np.array([-0.8, 0.3], np.float32), np.array([0.4, 0.4], np.float32), vao, 2, programGUI_id, texture)
         self.add_object(o)
+
+        #initialisation de la caméra
+        self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
+        self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
+        self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
+        self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
+        self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15]) 
+         
         
         # boucle d'affichage
         while not glfw.window_should_close(self.window):
@@ -186,7 +194,7 @@ class ViewerGL:
                             
 
                     self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
                     self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
                     self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
                     self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
@@ -202,7 +210,7 @@ class ViewerGL:
                             
 
                     self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.2
+                    self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
                     self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
                     self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
                     self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15])
@@ -217,12 +225,7 @@ class ViewerGL:
                     self.objs[1].transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy()
                     self.objs[1].visible = True
             
-            self.cam.transformation.rotation_euler = self.objs[0].transformation.rotation_euler.copy() 
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
-
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += np.pi
-            self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
-            self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 2, 15]) 
+            
       
       
     """
@@ -242,7 +245,7 @@ class ViewerGL:
                     rotation_euler), pyrr.Vector3([0, 0, 0.2]))
         
         #mouvement des ennemis
-        for i in range(4,7) :
+        for i in range(2,5) :
             if self.objs[i].visible == True :
                 self.objs[i].transformation.translation += self.objs[i].sens*\
                     pyrr.matrix33.apply_to_vector(pyrr.matrix33.\
@@ -267,7 +270,7 @@ class ViewerGL:
         
         #on teste les collions entre le projectile et les ennemis qui dans la liste slef.objs
         #sont aux indices 4,5,6. On verifie si les ennemis touche les bords de la plateforme.
-        for i in range(4,7) :
+        for i in range(2,5) :
             #on vérifie si l'ennemi et le projectile sont sur la même profondeur (axe z) et sur 
             # la même ligne (axe x)
             if round(self.objs[1].transformation.translation.z,1) == self.objs[i].transformation.translation.z and \
@@ -275,9 +278,9 @@ class ViewerGL:
                 < round(self.objs[1].transformation.translation.x,1) + 0.5 :
                 #si oui, augmente le score, rend le projectile non visible, le réinitailise à la positon du joueur
                 #on rend l'enenemi non visible, on change sa position sur la ligne, on le rend visible
-                if i == 4:
+                if i == 2:
                     self.score += 1
-                if i == 5 :
+                if i == 3:
                     self.score += 2
                 else : 
                     self.score += 3
