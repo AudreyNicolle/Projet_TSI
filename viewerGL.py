@@ -280,7 +280,7 @@ class ViewerGL:
                 #on rend l'enenemi non visible, on change sa position sur la ligne, on le rend visible
                 if i == 2:
                     self.score += 1
-                if i == 3:
+                elif i == 3:
                     self.score += 2
                 else : 
                     self.score += 3
